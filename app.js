@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const multer = require('multer');
 const accessoriesRoutes = require('./routes/AccessoriesRoute');
 const rentingRoutes = require('./routes/RentBookingRoute');
 const userRoutes = require('./routes/UserRoute');
@@ -15,7 +16,9 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve the admin panel
-app.use('/admin', express.static(path.join(__dirname, 'public/admin.html')));
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'backend/public/admin.html'));
+});
 
 // Routes
 app.use('/api/accessories', accessoriesRoutes);
@@ -25,10 +28,8 @@ app.use('/api/users', userRoutes);
 // Error handling for Multer
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
-    // Multer error (e.g., file size exceeded)
     res.status(400).json({ error: err.message });
   } else if (err) {
-    // Other errors
     res.status(400).json({ error: err.message });
   }
 });
